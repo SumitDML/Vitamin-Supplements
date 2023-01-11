@@ -16,9 +16,11 @@ def view_data(request):
             latitude = ZipCodes.objects.get(zip_code=zip_code).latitude
             zone_data = Zones.objects.filter(LatitudeMin__lte=latitude, LatitudeMax__gte=latitude)
             print(zone_data)
+            for i in zone_data:
+                print(i.zoneID)
             serializer = ZoneSerializer(data=zone_data, many=True, context={'request': request})
 
-            result = SunshineAvailability.objects.filter(zoneId=4).value_list(flat=True)
+            result = SunshineAvailability.objects.filter(ZoneID=4)
             print(result)
             serializer = SunshineAvailabilitySerializer(data=result, many=True, context={'request': request})
             if serializer.is_valid():
