@@ -11,10 +11,10 @@ vitamin_types = (
 
 
 class Zones(models.Model):
-    zoneID = models.IntegerField(primary_key=True, editable=False, name='ZoneID')
-    latitudeMin = models.FloatField(name='LatitudeMin')
-    latitudeMax = models.FloatField(name='LatitudeMax')
-    northSouth = models.CharField(max_length=1, name='NorthSouth')
+    ZoneID = models.IntegerField(primary_key=True, editable=False, name='ZoneID')
+    LatitudeMin = models.FloatField(name='LatitudeMin')
+    LatitudeMax = models.FloatField(name='LatitudeMax')
+    NorthSouth = models.CharField(max_length=1, name='NorthSouth')
     vitamin_type = models.IntegerField(choices=vitamin_types,default=1)
 
     class Meta:
@@ -23,10 +23,10 @@ class Zones(models.Model):
 
 class SunshineAvailability(models.Model):
     sunshine_id = models.AutoField(primary_key=True, editable=False, name='SunshineId', null=False)
-    month = models.IntegerField(name='Month')
-    strength = models.IntegerField(name='Strength')
+    Month = models.IntegerField(name='Month')
+    Strength = models.IntegerField(name='Strength')
     vitamin_type = models.IntegerField(choices=vitamin_types, default=1,null=True)
-    zone = models.IntegerField(name='ZoneID')
+    ZoneID = models.ForeignKey(name='ZoneID')
 
     class Meta:
         db_table = 'Sunshine_Availability'
