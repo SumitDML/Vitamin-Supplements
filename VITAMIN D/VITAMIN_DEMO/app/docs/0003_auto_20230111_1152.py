@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             obj1.save()
 
     dependencies = [
-        ('app', '0002_auto_20230111_1152'),
+        ('app', '0002_auto_20230112_0220'),
     ]
 
     operations = [
