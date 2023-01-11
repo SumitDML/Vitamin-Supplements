@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    def initiateData(self,schema_editor):
+    def initiateData(self, schema_editor):
         import pandas as pd
         from django.conf import settings
         from sqlalchemy import create_engine
@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
         xls = pd.ExcelFile('app/data/Vitamin D (1).xlsx')
         df1 = pd.read_excel(xls, 'Vitamin D Strength')
         df2 = pd.read_excel(xls, 'Zones')
-        df1.columns = ["ZoneID_id", "Month", "Strength"]
-        df2.columns = ["ZoneID", "LatitudeMin", "LatitudeMax", "NorthSouth"]
+        # df1.columns = ["zone_id", "Month", "Strength"]
+        # df2.columns = ["ZoneID", "LatitudeMin", "LatitudeMax", "NorthSouth"]
         df2.set_index("ZoneID", inplace=True)
         user = settings.DATABASES['default']['USER']
         password = settings.DATABASES['default']['PASSWORD']
@@ -26,8 +26,8 @@ class Migration(migrations.Migration):
         )
         engine = create_engine(database_url, echo=False)
 
-        df1.to_sql('Sunshine_Availability', con=engine, if_exists='replace')
-        df2.to_sql('Zones', con=engine, if_exists='replace')
+        df1.to_sql('Sunshine_Availability', con=engine, if_exists='append',index=False)
+        df2.to_sql('Zones', con=engine, if_exists='append',index=False)
 
     dependencies = [
         ('app', '0002_auto_20230111_0542'),
