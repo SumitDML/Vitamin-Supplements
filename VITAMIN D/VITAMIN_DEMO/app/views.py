@@ -5,36 +5,51 @@ from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from app.util import switch, switcher
+from rest_framework.pagination import  LimitOffsetPagination
+from rest_framework.generics import ListAPIView
 
 
 @api_view(['GET'])
 def get_tabs(request):
     tabId = request.GET.get('tabId')
+    page_number = request.GET.get('page')
     try:
-
         if tabId is None:
             parents = Tabs.objects.all()
+            p = Paginator(parents, 1)
             if not parents.exists():
                 return Response({
                     'status': False,
                     'message': "No Records Found!",
                 })
-            serializer = TabSerializer(parents, many=True)
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                page_obj = p.page(1)
+            serializer = TabSerializer(page_obj, many=True)
+
             return Response({
                 'status': 200,
                 'message': "Data Fetched Successfully!",
-                'data': serializer.data
+                'data': serializer.data,
+
             })
 
         else:
             parents = Tabs.objects.filter(tab_id=tabId)
+            p = Paginator(parents, 5)
             if not parents.exists():
                 return Response({
                     'status': False,
                     'message': "No Records Found!",
                 })
-            serializers1 = TabSerializer(parents, many=True)
+            try:
+                page_obj = p.get_page(page_number)
+            except PageNotAnInteger:
+                page_obj = p.page(1)
+            serializers1 = TabSerializer(page_obj, many=True)
             return Response({
                 'status': 200,
                 'message': "Data Fetched Successfully!",
@@ -51,7 +66,6 @@ def get_tabs(request):
 @api_view(['GET'])
 def get_tab_childs(request):
     tabId = request.GET.get('tab_id')
-
     all_childs = TabChild.objects.filter(tab_id=tabId)
     if not all_childs.exists():
         return Response({
@@ -71,8 +85,11 @@ def get_tab_childs(request):
 def get_child_data(request):
     tabId = request.GET.get('tab_id')
     tabChildId = request.GET.get('tab_child_id')
+    page_number = request.GET.get('page')
+
     try:
         all_childs = TabChild.objects.filter(tab_id=tabId)
+
         if not all_childs.exists():
             return Response({
                 'status': False,
@@ -84,12 +101,19 @@ def get_child_data(request):
                 'status': False,
                 'message': "Invali child Id!",
             })
+
         serializer = TabChildnameSerializer(result, many=True, context={'request': request})
         name = serializer.data[0].get('name')
         model = switch(name)
         serializer1 = getGenericSerializer(model)
         data = model.objects.all()
-        serialized_data = serializer1(data, many=True, context={'request': request})
+        p = Paginator(data, 25)
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        serialized_data = serializer1(page_obj, many=True, context={'request': request})
         return Response({
             'status': True,
             'message': "Fetched Successfully!!",
@@ -97,7 +121,7 @@ def get_child_data(request):
             'data': serialized_data.data
 
         })
-    except Exceptions as e:
+    except Exception as e:
         print(e)
     return Response({
         'status': True,
@@ -152,12 +176,18 @@ def get_child_data(request):
 def result_data(request):
     # data = []
     zip_code = request.GET['zip']
+    page_number = request.GET.get('page')
 
     try:
         latitude = ZipCodes.objects.get(zip_code=zip_code).latitude
-
         zone_data = Zones.objects.filter(LatitudeMin__lte=latitude, LatitudeMax__gte=latitude)
-        serializer = ZoneViewSerializer(zone_data, many=True, context={'request': request})
+        p = Paginator(zone_data, 1)
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        serializer = ZoneViewSerializer(page_obj, many=True, context={'request': request})
         # result = serializer.data
         # for itr in result:
         #     raw = SunshineAvailability.objects.filter(ZoneID=itr['ZoneID'])
