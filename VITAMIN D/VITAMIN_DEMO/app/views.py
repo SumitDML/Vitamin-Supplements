@@ -152,12 +152,7 @@ def get_child_data(request):
 def result_data(request):
     # data = []
     zip_code = request.GET['zip']
-    ZipCode=ZipCodes.objects.get(zip_code=zip_code).zip_code
-    if len(ZipCode)==0:
-        return Response({
-            'status': False,
-            'message': "Invalid Zip-Code!",
-        })
+
     try:
         latitude = ZipCodes.objects.get(zip_code=zip_code).latitude
 
@@ -169,8 +164,16 @@ def result_data(request):
         #     serializer1 = SunshineAvailabilitySerializer(raw, many=True, context={'request': request})
         #     data.append(serializer1.data)
 
+    except ZipCodes.DoesNotExist:
+        return Response({
+            'status': False,
+            'message': "Invalid Zip-Code!",
+        })
     except Exception as e:
-        print(e)
+        return Response({
+            'status': False,
+            'message': "Something went wrong!",
+        })
     return Response({
         'status': True,
         'message': "Fetched Successfully!!",
