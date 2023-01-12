@@ -19,6 +19,8 @@ class Zones(models.Model):
 
     class Meta:
         db_table = 'Zones'
+    def __str__(self):
+        return self.name
 
 
 class SunshineAvailability(models.Model):
@@ -45,3 +47,5 @@ class ZipCodes(models.Model):
 
     class Meta:
         db_table = 'zip_codes'
+    def __str__(self):
+        return self.name
