@@ -66,6 +66,11 @@ def get_tab_childs(request):
 
     else:
         childs = TabChild.objects.filter(tab_child_id=tabChildId)
+        if not childs.exists():
+            return Response({
+                'status': False,
+                'message': "No Records Found!",
+            })
         serializers = TabChildSerializer(childs, many=True)
         return Response({
             'status': True,
@@ -98,6 +103,12 @@ def view_data(request):
         # 'zones': serializer.data,
         # 'strengths':serializer2.data
     })
+@api_view(['GET'])
+def get_child_data(request):
+    tabId = request.GET.get('tab_id')
+    tabChildId = request.GET.get('tab_child_id')
+
+    all_childs = TabChild.objects.filter(tab_id=tabId)
 
 
 @api_view(['GET'])

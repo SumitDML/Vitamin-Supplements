@@ -14,7 +14,7 @@ def delete_app_with_sql():
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0005_alter_tabchild_table_alter_tabchildmappings_table_and_more'),
+        ('app', '0002_auto_20230112_1103'),
     ]
 
     operations = [
