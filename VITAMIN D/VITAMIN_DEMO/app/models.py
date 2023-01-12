@@ -2,13 +2,6 @@ from enum import IntEnum
 
 from django.db import models
 
-vitamin_types = (
-    (1, "Vitamin_A"),
-    (2, "Vitamin_B"),
-    (3, "Vitamin_C"),
-    (4, "Vitamin_D"),
-)
-
 
 class Tabs(models.Model):
     tabId = models.AutoField(primary_key=True, editable=False, name='tab_id')

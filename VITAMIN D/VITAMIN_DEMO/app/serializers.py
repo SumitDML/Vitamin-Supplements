@@ -9,12 +9,12 @@ class SunshineAvailabilitySerializer(serializers.ModelSerializer):
         fields = ['Month', 'Strength']
 
 
-class ZoneSerializer(serializers.ModelSerializer):
-    strengths = SunshineAvailabilitySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Zones
-        fields = ['ZoneID', 'LatitudeMin', 'LatitudeMax', 'NorthSouth', 'strengths']
+# class ZoneSerializer(serializers.ModelSerializer):
+#     strengths = SunshineAvailabilitySerializer(many=True, read_only=True)
+#
+#     class Meta:
+#         model = Zones
+#         fields = ['ZoneID', 'LatitudeMin', 'LatitudeMax', 'NorthSouth', 'strengths']
 
 
 class ZoneViewSerializer(serializers.ModelSerializer):
@@ -39,3 +39,18 @@ class TabChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = TabChild
         fields = ['tab_child_id', 'name', 'display_name']
+
+
+class TabChildnameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TabChild
+        fields = ['name']
+
+
+def getGenericSerializer(model_arg):
+    class GenericSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = model_arg
+            fields = '__all__'
+
+    return GenericSerializer
