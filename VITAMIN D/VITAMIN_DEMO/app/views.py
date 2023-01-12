@@ -7,20 +7,72 @@ from rest_framework.response import Response
 from .serializers import *
 
 
-# class Vitamins(enum.Enum):
-#     Vitamin_A = 1
-#     Vitamin_B = 2
-#     Vitamin_C = 3
-#     Vitamin_D = 4
+@api_view(['GET'])
+def get_tabs(request):
+    tabId = request.GET.get('tabId')
+    try:
+
+        if tabId is None:
+            parents = Tabs.objects.all()
+            if not parents.exists():
+                return Response({
+                    'status': False,
+                    'message': "No Records Found!",
+                })
+            serializer = TabSerializer(parents, many=True)
+            return Response({
+                'status': 200,
+                'message': "Data Fetched Successfully!",
+                'data': serializer.data
+            })
+
+        else:
+            parents = Tabs.objects.filter(tab_id=tabId)
+            if not parents.exists():
+                return Response({
+                    'status': False,
+                    'message': "No Records Found!",
+                })
+            serializers1 = TabSerializer(parents, many=True)
+            return Response({
+                'status': 200,
+                'message': "Data Fetched Successfully!",
+                'data': serializers1.data
+            })
+    except Exception as e:
+        print(e)
+    return Response({
+        'status': False,
+        'message': "Some Error Occured!",
+    })
 
 
-# Create your views here.
-# vitamin_types = (
-#     (1, "Vitamin_A"),
-#     (2, "Vitamin_B"),
-#     (3, "Vitamin_C"),
-#     (4, "Vitamin_D"),
-# )
+@api_view(['GET'])
+def get_tab_childs(request):
+    tabChildId = request.GET.get('tab_child_id')
+    if tabChildId is None:
+        childs = TabChild.objects.all()
+        if not childs.exists():
+            return Response({
+                'status': False,
+                'message': "No Records Found!",
+            })
+        serializer1 = TabChildSerializer(childs, many=True)
+        return Response({
+            'status': True,
+            'message': "Data Fetched Successfully!",
+            'data': serializer1.data
+        })
+
+    else:
+        childs = TabChild.objects.filter(tab_child_id=tabChildId)
+        serializers = TabChildSerializer(childs, many=True)
+        return Response({
+            'status': True,
+            'message': "Data Fetched Successfully!",
+            'data': serializers.data
+        })
+
 
 
 @api_view(['GET'])
@@ -68,4 +120,28 @@ def search_data(request):
         'status': True,
         'message': "Fetched Successfully!!",
         'data': serializer.data
+    })
+
+
+@api_view(['GET'])
+def result_data(request):
+    data = []
+    zip_code = request.GET['zip']
+    try:
+        latitude = ZipCodes.objects.get(zip_code=zip_code).latitude
+        zone_data = Zones.objects.filter(LatitudeMin__lte=latitude, LatitudeMax__gte=latitude)
+        serializer = ZoneViewSerializer(zone_data, many=True, context={'request': request})
+        result = serializer.data
+        for itr in result:
+            raw = SunshineAvailability.objects.filter(ZoneID=itr['ZoneID'])
+            serializer1 = SunshineAvailabilitySerializer(raw, many=True, context={'request': request})
+            data.append(serializer1.data)
+
+    except Exception as e:
+        print(e)
+    return Response({
+        'status': True,
+        'message': "Fetched Successfully!!",
+        'zones': serializer.data,
+        'strengths': data
     })

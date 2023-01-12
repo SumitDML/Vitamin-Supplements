@@ -27,3 +27,15 @@ class ZipCodesSerializer(serializers.ModelSerializer):
     class Meta:
         model = ZipCodes
         fields = "__all__"
+
+
+class TabSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tabs
+        fields = ['tab_id', 'name', 'display_name']
+
+
+class TabChildSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TabChild
+        fields = ['tabId', 'name', 'displayName']

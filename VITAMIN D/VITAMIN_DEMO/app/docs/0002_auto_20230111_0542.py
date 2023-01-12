@@ -14,7 +14,7 @@ def delete_app_with_sql():
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('app', '0001_initial'),
+        ('app', '0002_auto_20230112_0422'),
     ]
 
     operations = [
