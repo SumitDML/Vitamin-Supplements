@@ -5,9 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     def initiateData(self, schema_editor):
-
-        from django.conf import settings
-        from sqlalchemy import create_engine
         import pandas as pd
         from app.models import SunshineAvailability, Zones
         xls = pd.ExcelFile('app/data/Vitamin D (1).xlsx')

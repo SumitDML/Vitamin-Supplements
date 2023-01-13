@@ -1,7 +1,4 @@
-import enum
 
-from django.shortcuts import render
-from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
@@ -97,7 +94,7 @@ def get_child_data(request):
         p = Paginator(data, 25)
         try:
             page_obj = p.get_page(page_number)  # returns the desired page object
-        except PageNotAnInteger:
+        except PageNotAnInteger or EmptyPage:
             # if page_number is not an integer then assign the first page
             page_obj = p.page(1)
         serialized_data = serializer1(page_obj, many=True, context={'request': request})
