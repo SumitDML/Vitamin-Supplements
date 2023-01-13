@@ -44,7 +44,7 @@ class TabChildMappings(models.Model):
 
 
 class Zones(models.Model):
-    ZoneID = models.IntegerField(primary_key=True, editable=False, name='ZoneID')
+    ZoneID = models.IntegerField(primary_key=True, editable=False, name='id')
     LatitudeMin = models.FloatField(name='LatitudeMin')
     LatitudeMax = models.FloatField(name='LatitudeMax')
     NorthSouth = models.CharField(max_length=1, name='NorthSouth')
@@ -60,7 +60,7 @@ class SunshineAvailability(models.Model):
     sunshine_id = models.AutoField(primary_key=True, editable=False, name='SunshineId', null=False)
     Month = models.IntegerField(name='Month')
     Strength = models.IntegerField(name='Strength')
-    ZoneID = models.ForeignKey('Zones', on_delete=models.CASCADE, related_name='strengths', name='ZoneID', null=True)
+    ZoneID = models.ForeignKey('Zones', on_delete=models.CASCADE, related_name='strengths', name='id', null=True)
 
     class Meta:
         db_table = 'sunshine_availibilty'

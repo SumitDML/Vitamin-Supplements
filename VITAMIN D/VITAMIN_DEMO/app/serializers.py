@@ -20,7 +20,7 @@ class SunshineAvailabilitySerializer(serializers.ModelSerializer):
 class ZoneViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zones
-        fields = ['ZoneID', 'LatitudeMin', 'LatitudeMax', 'NorthSouth']
+        fields = ['id', 'LatitudeMin', 'LatitudeMax', 'NorthSouth']
 
 
 class ZipCodesSerializer(serializers.ModelSerializer):

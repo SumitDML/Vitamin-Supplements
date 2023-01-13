@@ -102,20 +102,24 @@ def get_child_data(request):
         name = serializer.data[0].get('name')
         model = switch(name)
         serializer1 = getGenericSerializer(model)
-        data = model.objects.all()
+        data = model.objects.all().order_by('id')
         p = Paginator(data, 25)
         try:
             page_obj = p.get_page(page_number)  # returns the desired page object
         except PageNotAnInteger:
             # if page_number is not an integer then assign the first page
             page_obj = p.page(1)
+        except EmptyPage:
+            # get the lat page data if the page_number is bigger than last page number.
+            page_obj = p.page(p.num_pages)
         serialized_data = serializer1(page_obj, many=True, context={'request': request})
-        print(p.page_range.stop)
+        totalPage=p.page_range.stop-1
+
         return Response({
             'status': True,
             'message': "Fetched Successfully!!",
             'tab_id': tabId,
-            'page_size':p.page_range.stop,
+            'page_size':totalPage,
             'data': serialized_data.data
 
         })
