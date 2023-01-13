@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             obj.save()
 
         for df2 in df2.itertuples():
-            obj1 = Zones.objects.create(zoneID=df2.ZoneID, latitudeMin=df2.LatitudeMin,latitudeMax=df2.LatitudeMax, northSouth=df2.NorthSouth)
+            obj1 = Zones.objects.create(zoneID=df2.id, latitudeMin=df2.LatitudeMin, latitudeMax=df2.LatitudeMax, northSouth=df2.NorthSouth)
             obj1.save()
 
     dependencies = [

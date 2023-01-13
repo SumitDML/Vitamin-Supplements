@@ -15,13 +15,13 @@ class Migration(migrations.Migration):
         df2 = pd.read_excel(xls, 'Zones')
 
         for df2 in df2.itertuples():
-            obj1 = Zones.objects.create(ZoneID=df2.ZoneID, LatitudeMin=df2.LatitudeMin, LatitudeMax=df2.LatitudeMax,
+            obj1 = Zones.objects.create(id=df2.id, LatitudeMin=df2.LatitudeMin, LatitudeMax=df2.LatitudeMax,
                                         NorthSouth=df2.NorthSouth)
             obj1.save()
 
         for df1 in df1.itertuples():
-            zones = Zones.objects.get(ZoneID=df1.ZoneID)
-            obj = SunshineAvailability(ZoneID=zones,Month=df1.Month, Strength=df1.Strength)
+            zones = Zones.objects.get(id=df1.id)
+            obj = SunshineAvailability(id=zones,Month=df1.Month, Strength=df1.Strength)
             obj.save()
 
     dependencies = [

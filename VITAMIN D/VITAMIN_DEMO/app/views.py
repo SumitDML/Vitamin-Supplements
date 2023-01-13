@@ -5,6 +5,7 @@ from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from app.util import switch, switcher
 
 
@@ -71,8 +72,11 @@ def get_tab_childs(request):
 def get_child_data(request):
     tabId = request.GET.get('tab_id')
     tabChildId = request.GET.get('tab_child_id')
+    page_number = request.GET.get('page_number')
+
     try:
         all_childs = TabChild.objects.filter(tab_id=tabId)
+
         if not all_childs.exists():
             return Response({
                 'status': False,
@@ -82,75 +86,39 @@ def get_child_data(request):
         if not result.exists():
             return Response({
                 'status': False,
-                'message': "Invali child Id!",
+                'message': "Invalid child Id!",
             })
+
         serializer = TabChildNameSerializer(result, many=True, context={'request': request})
         name = serializer.data[0].get('name')
         model = switch(name)
         serializer1 = getGenericSerializer(model)
-        data = model.objects.all()
-        serialized_data = serializer1(data, many=True, context={'request': request})
+        data = model.objects.all().order_by('id')
+        p = Paginator(data, 25)
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        serialized_data = serializer1(page_obj, many=True, context={'request': request})
+        totalPages = p.page_range.stop-1
         return Response({
             'status': True,
             'message': "Fetched Successfully!!",
             'tab_id': tabId,
+            'page_size': totalPages,
             'data': serialized_data.data
 
         })
-    except Exceptions as e:
+    except Exception as e:
         print(e)
     return Response({
         'status': True,
         'message': "Sorry ! Some Error Occured!",
     })
 
-#
-# @api_view(['GET'])
-# def search_data(request):
-#         zip_code = request.GET['zip']
-#         latitude = ZipCodes.objects.get(zip_code=zip_code).latitude
-#         if not latitude is None:
-#             return Response({
-#                 'status': False,
-#                 'message': "Invalid Zip-Code",
-#             })
-#         zone_data = Zones.objects.filter(LatitudeMin__lte=latitude, LatitudeMax__gte=latitude)
-#         serializer = ZoneViewSerializer(zone_data, many=True, context={'request': request})
-#
-#         return Response({
-#             'status': True,
-#             'message': "Fetched Successfully!!",
-#             'data': serializer.data
-#         })
-#
-# @api_view(['GET'])
-# def view_data(request):
-#     vitamin = request.GET['keyword']
-#     try:
-#
-#         zones = Zones.objects.filter(vitamin_type=vitamin)
-#         strength = SunshineAvailability.objects.filter(vitamin_type=vitamin)
-#         serializer = ZoneViewSerializer(zones, many=True, context={'request': request})
-#         serializer2 = SunshineAvailabilitySerializer(strength, many=True, context={'request': request})
-#         return Response({
-#             'status': True,
-#             'message': "Fetched Successfully!!",
-#             'zones': serializer.data,
-#             'strengths': serializer2.data
-#         })
-#     except Exception as e:
-#         print(e)
-#     return Response({
-#         'status': True,
-#         'message': "Error Occured!",
-#         # 'zones': serializer.data,
-#         # 'strengths':serializer2.data
-#     })
-
-
 @api_view(['GET'])
 def result_data(request):
-    # data = []
     zip_code = request.GET['zip']
 
     try:
@@ -158,11 +126,6 @@ def result_data(request):
 
         zone_data = Zones.objects.filter(LatitudeMin__lte=latitude, LatitudeMax__gte=latitude)
         serializer = ZoneViewSerializer(zone_data, many=True, context={'request': request})
-        # result = serializer.data
-        # for itr in result:
-        #     raw = SunshineAvailability.objects.filter(ZoneID=itr['ZoneID'])
-        #     serializer1 = SunshineAvailabilitySerializer(raw, many=True, context={'request': request})
-        #     data.append(serializer1.data)
 
     except ZipCodes.DoesNotExist:
         return Response({
