@@ -84,7 +84,7 @@ def get_child_data(request):
                 'status': False,
                 'message': "Invali child Id!",
             })
-        serializer = TabChildnameSerializer(result, many=True, context={'request': request})
+        serializer = TabChildNameSerializer(result, many=True, context={'request': request})
         name = serializer.data[0].get('name')
         model = switch(name)
         serializer1 = getGenericSerializer(model)

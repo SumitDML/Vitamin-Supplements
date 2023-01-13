@@ -38,10 +38,10 @@ class TabSerializer(serializers.ModelSerializer):
 class TabChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = TabChild
-        fields = ['tab_child_id', 'name', 'display_name']
+        fields = ['tab_child_id','display_name']
 
 
-class TabChildnameSerializer(serializers.ModelSerializer):
+class TabChildNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = TabChild
         fields = ['name']
